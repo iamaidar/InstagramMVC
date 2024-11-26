@@ -1,0 +1,73 @@
+﻿@model InstagramMVC.ViewModels.RegisterViewModel
+
+@{
+ViewBag.Title = "Регистрация";
+}
+
+<div class="row mt-5">
+    <div class="col-4 mx-auto border border-2 p-4">
+        <div class="mb-3">
+            <img class="img-fluid mx-auto d-block border-0 w-50" src="~/images/instagram_title.png" alt="Instagram">
+        </div>
+        
+        <form asp-action="Register" enctype="multipart/form-data" class="mb-3">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <input asp-for="UserName" type="text" class="form-control" placeholder="Логин">
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <input asp-for="Email" type="email" class="form-control" placeholder="Эл. адрес">
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="input-group mb-3">
+                <input asp-for="Avatar" type="file" class="form-control" accept="image/*">
+                <span asp-validation-for="Avatar" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <input asp-for="Password" type="password" class="form-control" placeholder="Пароль">
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Подтвердить пароль">
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <input asp-for="Name" type="text" class="form-control" placeholder="Имя">
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <textarea class="form-control" asp-for="Bio" rows="6" style="resize: none;" placeholder="Информация о пользователе"></textarea>
+                <span asp-validation-for="Bio" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <input asp-for="PhoneNumber" type="text" class="form-control" placeholder="Номер телефона">
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <input asp-for="Gender" type="tel" class="form-control" placeholder="Пол">
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <input type="submit" class="form-control btn btn-primary" value="Регистрация">
+            </div>
+        </form>
+
+        <div class="border border-2 text-center p-3">
+            <p>Есть аккаунт ? <a asp-action="Register" class="text-decoration-none">Вход</a></p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

@@ -1,0 +1,124 @@
+﻿@model InstagramMVC.ViewModels.PublicationDetailsViewModel
+
+<div class="modal-dialog modal-xl">
+    <div class="modal-content p-2">
+        <div class="modal-header d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-center">
+                <img class="rounded-circle me-2" style="width: 30px; height: 30px;" src="@Model.Publication.User.PathToAvatarPhoto" alt="Avatar">
+                <a class="mb-0 fw-bold text-dark text-decoration-none" asp-controller="User" asp-action="Profile" asp-route-id="@Model.Publication.User.Id">@Model.Publication.User.UserName</a>
+            </div>
+            <div class="dropdown">
+                <button class="border-0 p-0 m-0 bg-white link-dark me-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#000000" class="bi bi-three-dots" viewBox="0 0 16 16">
+                        <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+                    </svg>
+                </button>
+                <ul class="dropdown-menu">
+                    @if (Model.CurrentUser.Id == Model.Publication.UserId)
+                    {
+                        <li>
+                            <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deletePublicationModal-@Model.Publication.Id">
+                                Удалить
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" class="dropdown-item text-warning" data-bs-toggle="modal" data-bs-target="#editPublicationModal-@Model.Publication.Id">
+                                Редактировать
+                            </button>
+                        </li>
+                    }
+                </ul>
+            
+                <div class="modal fade" id="deletePublicationModal-@Model.Publication.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Удаление</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Вы точно хотите удалить эту публикацию ?
+                            </div>
+                            <div class="modal-footer">
+                                <input type="submit" onclick="deletePublication('@Model.Publication.Id')" value="Удалить" class="btn btn-danger">
+            
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отменить</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="editPublicationModal-@Model.Publication.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Редактирование</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <label class="form-label">Описание</label>
+                                <textarea class="form-control" required id="descriptionForEdit-@Model.Publication.Id" cols="30" rows="10" style="resize: none;">@Model.Publication.Description</textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" onclick="editPublication('@Model.Publication.Id')" class="btn btn-warning">Подтвердить обновление</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отменить</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="row" style="height: 75vh;">
+                <div class="col-7 d-flex justify-content-center">
+                    <img src="@Model.Publication.ImagePath" class="img-fluid" style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="Publication">
+                </div>
+                
+                <div class="col-5 p-2" style="position: relative;">
+                    <div>
+                        <img class="rounded-circle me-2" style="width: 30px; height: 30px;" src="@Model.Publication.User.PathToAvatarPhoto" alt="Avatar">
+                        <a class="mb-0 fw-bold text-dark text-decoration-none me-1" asp-controller="User" asp-action="Profile" asp-route-id="@Model.Publication.User.Id">@Model.Publication.User.UserName</a>
+                        <p class="card-text d-inline text-dark">@Model.Publication.Description</p>
+                    </div>
+
+                    <div class="mt-3 overflow-auto" style="max-height: 345px;">
+                        @foreach (Comment comment in Model.Publication.Comments.OrderBy(c => c.DateOfCreation))
+                        {
+                            <div class="d-flex mb-2 align-items-center">
+                                <p class="mb-0">
+                                    <img class="rounded-circle me-2" style="width: 30px; height: 30px;" src="@comment.User.PathToAvatarPhoto" alt="Avatar">
+                                    <span class="text-muted small" style="font-size: 0.9em;">                    
+                                        <a class="mb-0 fw-bold text-dark text-decoration-none" asp-controller="User" asp-action="Profile" asp-route-id="@comment.User.Id">@comment.User.UserName</a>
+                                        @comment.DateOfCreation.ToString("dd.MM.yy")</span>
+                                    <span class="text-wrap text-break">: @comment.Text</span>
+                                </p>
+                            </div>
+                        }
+                    </div>
+                    
+                    <div class="py-2 border-top" style="position: absolute; bottom: 0; left: 0; width: 100%; background-color: white;">
+                        <div class="mb-1 publication-@Model.Publication.Id">
+                            @{
+                                await Html.RenderPartialAsync("~/Views/Publication/_LikeFormPartialView.cshtml", Model);
+                            }
+                        </div>
+                        <div class="border-top pt-3">
+                            <form asp-action="Comment" asp-controller="Publication" method="post" class="p-0">
+                                <input type="hidden" name="publicationId" value="@Model.Publication.Id" />
+                                <div class="row d-flex align-items-start">
+                                    <div class="col-7">
+                                        <textarea name="commentText" class="form-control border-0" style="box-shadow: none; resize: none;" rows="2" placeholder="Комментарий ..." required></textarea>
+                                    </div>
+                                    <div class="col-5">
+                                        <button type="submit" class="btn text-primary">Опубликовать</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,114 @@
+@model InstagramMVC.ViewModels.IndexViewModel
+
+@{
+    ViewData["Title"] = "Instagram";
+}
+
+<div id="index">
+    @foreach (var item in Model.Publications)
+    {
+    <div class="row">
+        <div class="col-5 mx-auto mb-5">
+            <div class="card rounded-0 border-top-0 border-end-0 border-start-0">
+                <div class="py-3 d-flex justify-content-between">
+                    <div>
+                        <img class="rounded-circle" style="width: 30px; height: 30px;" src="@item.User.PathToAvatarPhoto" alt="Avatar">
+                        <a class="mb-0 fw-bold text-dark text-decoration-none" asp-controller="User" asp-action="Profile" asp-route-id="@item.User.Id">@item.User.UserName</a>
+                    </div>
+                </div>
+                <div style="background-color: #d9d9d9;">
+                    <img src="@item.ImagePath" class="card-img" alt="Publication">
+                </div>
+                <div class="py-3">
+                    <div class="mb-2 publication-@item.Id">
+                        @{
+                        await Html.RenderPartialAsync("_LikeFormPartialView", new PublicationDetailsViewModel
+                        {
+                        CurrentUser = Model.CurrentUser,
+                        Publication = item
+                        });
+                        }
+                    </div>
+                    <div class="mb-2">
+                        <a class="mb-0 fw-bold text-dark text-decoration-none me-1" asp-controller="User" asp-action="Profile" asp-route-id="@item.User.Id">@item.User.UserName</a>
+                        <p class="card-text d-inline">@item.Description</p>
+                    </div>
+
+                    <div class="mb-2">
+                        @if (item.Comments.Any())
+                        {
+                        var lastComment = item.Comments.OrderByDescending(c => c.DateOfCreation).FirstOrDefault();
+                        <p class="mb-1 text-break text-wrap"><a class="mb-0 fw-bold text-dark text-decoration-none" asp-controller="User" asp-action="Profile" asp-route-id="@item.User.Id">@item.User.UserName</a> : @lastComment.Text</p>
+                        }
+                    </div>
+
+                    <div>
+                        <button type="button" class="border-0 p-0 bg-white" data-bs-toggle="modal" data-bs-target="#modal-@item.Id">
+                            <span class="text-light-emphasis">Посмотреть все комментарии(@item.Comments.Count)</span>
+                        </button>
+
+                        <div class="modal fade" id="modal-@item.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            @{
+                            await Html.RenderPartialAsync("~/Views/Publication/_DetailsPartialView.cshtml", new PublicationDetailsViewModel
+                            {
+                            CurrentUser = Model.CurrentUser,
+                            Publication = item
+                            });
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <form asp-action="Comment" asp-controller="Publication" method="post" class="p-0">
+                        <input type="hidden" name="publicationId" value="@item.Id" />
+                        <div class="row d-flex align-items-start">
+                            <div class="col-7">
+                                <textarea name="commentText" class="form-control border-0 p-0" style="box-shadow: none; resize: none;" rows="2" placeholder="Комментарий ..." required></textarea>
+                            </div>
+                            <div class="col-5">
+                                <button type="submit" class="btn text-primary">Опубликовать</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+</div>
+
+
+@section Scripts
+{
+    <script>
+        function editPublication(publicationId) {
+            $.ajax({
+                url: '@Url.Action("Edit", "Publication")',
+                type: 'POST',
+                data: {
+                    'id' : publicationId,
+                    'newDescription' : $(`#descriptionForEdit-${publicationId}`).val()
+                },
+                success: function (response) {
+                    $(`#editPublicationModal-${publicationId}`).modal('hide');
+                    $(`#modal-${publicationId}`).html(response);
+                }
+            });
+        }
+        
+        function like(publicationId) {
+            $.ajax({
+                url: '@Url.Action("LikeUnlike", "Publication")',
+                type: 'POST',
+                data: {'id' : publicationId},
+                success: function (response) {
+                    $(`.publication-${publicationId}`).html(response);
+                },
+                error: function () {
+                    console.log('error');
+                }
+            });
+        }
+    
+    </script>
+}

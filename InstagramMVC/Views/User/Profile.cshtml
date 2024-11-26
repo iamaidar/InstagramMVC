@@ -1,0 +1,109 @@
+@model InstagramMVC.ViewModels.ProfileViewModel
+
+@{
+    ViewBag.Title = Model.User.UserName;
+}
+
+<div class="row">
+    <div class="col-9 mx-auto">
+        <div class="row py-5">
+            <div class="col-md-4 d-flex justify-content-center">
+                <img src="@Model.User.PathToAvatarPhoto" alt="photo" class="rounded-circle border border-1" style="width: 150px; height: 150px;">
+            </div>
+            <div class="col-md-8">
+                <div id="result">
+                    @{
+                        await Html.RenderPartialAsync("_SubscribePartialView", new SubscribeViewModel
+                        {
+                            User = Model.User,
+                            CurrentUser = Model.CurrentUser,
+                            Subscriptions = Model.Subscriptions
+                        });
+                    }
+                </div>
+                <div class="profile-bio mt-3">
+                    <p>
+                        <strong>@Model.User.Name</strong>
+                    </p>
+                    <p>@Model.User.Bio</p>
+                </div>
+            </div>
+            <div class="border border-1 mt-5"></div>
+
+
+            <div id="publications" class="row row-cols-3 py-4">
+                @{
+                    await Html.RenderPartialAsync("_ProfilePublicationsPartialView", Model);
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        function editPublication(publicationId) {
+            $.ajax({
+                url: '@Url.Action("Edit", "Publication")',
+                type: 'POST',
+                data: {
+                    'id' : publicationId,
+                    'newDescription' : $(`#descriptionForEdit-${publicationId}`).val()
+                },
+                success: function (response) {
+                    $(`#editPublicationModal-${publicationId}`).modal('hide');
+                    $(`#modal-${publicationId}`).html(response);
+                }
+            });
+        }
+        
+        function deletePublication(publicationId) {
+            $.ajax({
+                url: '@Url.Action("Delete", "Publication")',
+                type: 'POST',
+                data: {
+                    'id' : publicationId
+                },
+                success: function (response) {
+                    $(`#deletePublicationModal-${publicationId}`).modal('hide');
+                    $(`#modal-${publicationId}`).modal('hide');
+                    $('#publications').html(response);
+                },
+                error: function () {
+                    console.log('error');
+                }
+            });
+        }
+        
+        $('#result').on('click', '#subscribeBtn',function () {
+            $.ajax({
+                url: '@Url.Action("FollowUnFollow", "User")', 
+                type: 'POST',
+                data: {'id' : '@Model.User.Id'},
+                success: function (response) {
+                    $('#result').html(response);
+                },
+                error: function () {
+                    console.log('error')
+                }
+            });
+        });
+
+        function like(publicationId) {
+            $.ajax({
+                url: '@Url.Action("LikeUnlike", "Publication")',
+                type: 'POST',
+                data: {'id' : publicationId},
+                success: function (response) {
+                    $(`.publication-${publicationId}`).html(response);
+                },
+                error: function () {
+                    console.log('error');
+                }
+            });
+        }
+    
+    
+    </script>
+}

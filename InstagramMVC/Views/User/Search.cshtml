@@ -1,0 +1,31 @@
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@model List<MyUser>
+
+@{
+    ViewBag.Title = "Результаты поиска";
+}
+
+<div class="container py-5">
+    <h3 class="mb-4 text-center">Результаты поиска</h3>
+
+    @if (!Model.Any())
+    {
+    <p class="text-center">Ничего не найдено.</p>
+    }
+    else
+    {
+    <div class="row">
+        @foreach (var u in Model)
+        {
+        <div class="col-6 col-md-4 col-lg-3 mb-4">
+            <div class="card border-0 text-center">
+                <a asp-action="Profile" asp-controller="User" asp-route-id="@u.Id" class="text-decoration-none text-dark">
+                    <img src="@u.PathToAvatarPhoto" class="rounded-circle profile-pic2 mb-2" alt="photo" style="width: 100px; height: 100px; object-fit: cover;">
+                    <p class="px-3">@u.UserName</p>
+                </a>
+            </div>
+        </div>
+        }
+    </div>
+    }
+</div>

@@ -1,0 +1,23 @@
+﻿@model ProfileViewModel
+
+@foreach (Publication p in Model.Publications)
+{
+    <div class="mb-4 d-flex align-items-center">
+        <div class="card rounded-0">
+
+            <button type="button" class="border-0 p-0" data-bs-toggle="modal" data-bs-target="#modal-@p.Id">
+                <img src="@p.ImagePath" class="img-fluid" style="object-fit: cover; height: 300px;" alt="Publication">
+            </button>
+
+            <div class="modal fade" id="modal-@p.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                @{
+                    await Html.RenderPartialAsync("~/Views/Publication/_DetailsPartialView.cshtml", new PublicationDetailsViewModel
+                    {
+                        CurrentUser = Model.CurrentUser,
+                        Publication = p
+                    });
+                }
+            </div>
+        </div>
+    </div>
+}

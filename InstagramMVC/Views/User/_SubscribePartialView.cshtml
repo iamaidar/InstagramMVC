@@ -1,0 +1,22 @@
+﻿@model SubscribeViewModel
+
+<div class="d-flex justify-content-start align-items-center">
+    <p class="fs-4 me-3 mb-0">@Model.User.UserName</p>
+    @if (Model.CurrentUser.Id != Model.User.Id)
+    {
+        <button type="button" id="subscribeBtn" class="btn @(Model.Subscriptions.Any(s => s.SubscriberId == Model.CurrentUser.Id && s.SubscribedToId == Model.User.Id) ? "btn-secondary" : "btn-primary")">
+            @(Model.Subscriptions.Any(s => s.SubscriberId == Model.CurrentUser.Id && s.SubscribedToId == Model.User.Id) ? "Отписаться" : "Подписаться" )
+        </button>
+    }
+</div>
+<div class="profile-stats d-flex mt-3">
+    <div class="me-4">
+        <span>@Model.User.CountOfPublications</span> публикаций
+    </div>
+    <div class="me-4">
+        <span>@Model.User.CountOfSubscribers</span> подписчиков
+    </div>
+    <div>
+        <span>@Model.User.CountOfSubscriptions</span> подписок
+    </div>
+</div>
